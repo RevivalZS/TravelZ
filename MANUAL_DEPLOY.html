@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手动部署解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+        }
+        
+        .emergency {
+            background: #ff6b6b;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,107,107,0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255,107,107,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+        }
+        
+        .solution {
+            background: #4cd964;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 15px;
+            border-left: 5px solid #6a11cb;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #6a11cb;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #6a11cb;
+            color: white;
+            padding: 18px 35px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 15px 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background: #5a0cb9;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(106,17,203,0.3);
+        }
+        
+        .button-green {
+            background: #4cd964;
+        }
+        
+        .button-green:hover {
+            background: #3bc853;
+        }
+        
+        .button-red {
+            background: #ff6b6b;
+        }
+        
+        .button-red:hover {
+            background: #ff5252;
+        }
+        
+        .code-block {
+            background: #2d3436;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #dfe6e9;
+            transition: all 0.3s;
+        }
+        
+        .status-card:hover {
+            border-color: #6a11cb;
+            transform: translateY(-5px);
+        }
+        
+        .status-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .check {
+            color: #4cd964;
+        }
+        
+        .pending {
+            color: #ffc107;
+        }
+        
+        .warning {
+            color: #ff6b6b;
+        }
+        
+        .link-list {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .link-item {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2d3436;
+            border-left: 4px solid #6a11cb;
+            transition: all 0.3s;
+        }
+        
+        .link-item:hover {
+            background: #f1f8e9;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 紧急解决方案：手动部署</h1>
+        
+        <div class="emergency">
+            <h2>⚠️ GitHub Pages按钮点不动？</h2>
+            <p>使用这个替代方案，绕过页面按钮问题！</p>
+        </div>
+        
+        <div class="solution">
+            <h2>✅ 解决方案：GitHub Actions自动部署</h2>
+            <p>我已经创建了自动部署工作流，现在只需要手动触发。</p>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <h3>访问GitHub Actions</h3>
+            <p>点击下方按钮打开Actions页面：</p>
+            <a href="https://github.com/RevivalZS/revival/actions" target="_blank" class="button button-red">
+                🚀 打开GitHub Actions
+            </a>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">2</span>
+            <h3>手动运行工作流</h3>
+            <p>在Actions页面中：</p>
+            <ol>
+                <li>找到 <strong>"Deploy to GitHub Pages"</strong> 工作流</li>
+                <li>点击 <strong>"Run workflow"</strong> 按钮</li>
+                <li>选择 <strong>main</strong> 分支</li>
+                <li>点击 <strong>"Run workflow"</strong></li>
+            </ol>
+            <div class="code-block">
+                Actions页面 → Deploy to GitHub Pages → Run workflow → main → Run workflow
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">3</span>
+            <h3>等待部署完成</h3>
+            <p>部署过程需要2-3分钟：</p>
+            <ol>
+                <li>GitHub会自动运行工作流</li>
+                <li>工作流会启用Pages并部署网站</li>
+                <li>完成后会显示绿色勾勾</li>
+                <li>网站自动上线</li>
+            </ol>
+        </div>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-icon check">✅</div>
+                <h4>仓库创建</h4>
+                <p>已完成</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon check">✅</div>
+                <h4>代码推送</h4>
+                <p>已完成</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon check">✅</div>
+                <h4>工作流配置</h4>
+                <p>已完成</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon pending">⏳</div>
+                <h4>手动触发</h4>
+                <p>等待操作</p>
+            </div>
+        </div>
+        
+        <div class="link-list">
+            <h3>🔗 一键操作链接</h3>
+            <a href="https://github.com/RevivalZS/revival/actions" target="_blank" class="link-item">
+                🚀 GitHub Actions (手动触发部署)
+            </a>
+            <a href="https://github.com/RevivalZS/revival" target="_blank" class="link-item">
+                📁 查看GitHub仓库
+            </a>
+            <a href="https://revivalzs.github.io/revival/" target="_blank" class="link-item">
+                🌐 你的网站地址
+            </a>
+            <a href="https://github.com/RevivalZS/revival/settings/pages" target="_blank" class="link-item">
+                ⚙️ GitHub Pages设置 (备用)
+            </a>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 25px; border-radius: 15px; margin: 30px 0;">
+            <h3>💡 为什么这个方法有效？</h3>
+            <p>GitHub Actions有更高的权限，可以：</p>
+            <ol>
+                <li>绕过网页界面的限制</li>
+                <li>直接调用GitHub API</li>
+                <li>自动配置Pages设置</li>
+                <li>部署网站文件</li>
+            </ol>
+            <p><strong>这是最可靠的解决方案！</strong></p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="https://github.com/RevivalZS/revival/actions" target="_blank" class="button" style="font-size: 1.3rem; padding: 25px 50px;">
+                🚀 立即打开GitHub Actions并触发部署
+            </a>
+            <p style="margin-top: 20px; color: #666;">
+                点击后，按照步骤2操作即可
+            </p>
+        </div>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #eee;">
+            <h3>📊 部署信息</h3>
+            <div class="code-block">
+                仓库: https://github.com/RevivalZS/revival<br>
+                Actions: https://github.com/RevivalZS/revival/actions<br>
+                网站: https://revivalzs.github.io/revival/<br>
+                工作流: .github/workflows/deploy.yml<br>
+                令牌: [出于安全考虑已隐藏]
+            </div>
+        </div>
+    </div>
+</body>
+</html>

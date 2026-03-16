@@ -1,0 +1,76 @@
+{
+  "places": [
+    {
+      "id": 1,
+      "name": "张家界国家森林公园",
+      "location": "湖南张家界",
+      "description": "以奇特的石英砂岩峰林地貌闻名，电影《阿凡达》取景地之一。三千多座奇峰拔地而起，形态各异，气势壮观。",
+      "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["自然", "徒步"],
+      "coordinates": {
+        "lat": 29.1171,
+        "lng": 110.4792
+      }
+    },
+    {
+      "id": 2,
+      "name": "故宫博物院",
+      "location": "北京",
+      "description": "明清两代的皇家宫殿，世界上现存规模最大、保存最为完整的木质结构古建筑群。拥有丰富的文物藏品和深厚的历史文化底蕴。",
+      "image": "https://images.unsplash.com/photo-1547981609-4b6bf67b7d46?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["历史", "文化"],
+      "coordinates": {
+        "lat": 39.9163,
+        "lng": 116.3972
+      }
+    },
+    {
+      "id": 3,
+      "name": "外滩",
+      "location": "上海",
+      "description": "上海最具代表性的城市景观，汇集了不同时期、不同风格的建筑。夜晚的灯光秀和浦江夜景尤为迷人，是感受上海现代魅力的绝佳地点。",
+      "image": "https://images.unsplash.com/photo-1503386435952-d7918b99d4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["城市", "夜景"],
+      "coordinates": {
+        "lat": 31.2337,
+        "lng": 121.4905
+      }
+    },
+    {
+      "id": 4,
+      "name": "成都宽窄巷子",
+      "location": "四川成都",
+      "description": "体验成都慢生活的好去处，集美食、文化、休闲于一体。青砖黛瓦的川西民居，地道的小吃美食，悠闲的茶馆文化，让人流连忘返。",
+      "image": "https://images.unsplash.com/photo-1552465011-b4e30bf7349d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["美食", "文化"],
+      "coordinates": {
+        "lat": 30.6634,
+        "lng": 104.0627
+      }
+    },
+    {
+      "id": 5,
+      "name": "西湖",
+      "location": "浙江杭州",
+      "description": "中国著名的淡水湖，被誉为'人间天堂'。苏堤春晓、断桥残雪、雷峰夕照等十景各具特色，四季皆有不同的美景。",
+      "image": "https://images.unsplash.com/photo-1538431176036-90618ae1d5c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["自然", "文化"],
+      "coordinates": {
+        "lat": 30.2470,
+        "lng": 120.1432
+      }
+    },
+    {
+      "id": 6,
+      "name": "重庆洪崖洞",
+      "location": "重庆",
+      "description": "依山而建的吊脚楼建筑群，夜晚灯光璀璨时宛如《千与千寻》中的场景。可以品尝地道的重庆火锅，欣赏两江交汇的壮丽景色。",
+      "image": "https://images.unsplash.com/photo-1560845450-6b8c2d93d5a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "tags": ["美食", "夜景"],
+      "coordinates": {
+        "lat": 29.5630,
+        "lng": 106.5760
+      }
+    }
+  ]
+}

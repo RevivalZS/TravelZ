@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行足迹 - 与朋友分享美好景点</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">
+                <i class="fas fa-mountain-sun"></i>
+                <span>旅行足迹</span>
+            </a>
+            <div class="nav-links">
+                <a href="#home">首页</a>
+                <a href="#places">景点推荐</a>
+                <a href="#about">关于</a>
+                <a href="#share" class="btn-share">分享景点</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>发现世界的美好</h1>
+            <p class="subtitle">记录你的旅行足迹，与朋友分享精彩瞬间</p>
+            <a href="#places" class="btn-primary">探索景点</a>
+            <a href="#share" class="btn-secondary">分享你的旅行</a>
+        </div>
+    </section>
+
+    <!-- 景点展示 -->
+    <section id="places" class="places-section">
+        <div class="container">
+            <h2>推荐景点</h2>
+            <p class="section-subtitle">这些地方值得一去</p>
+            
+            <div class="filter-tags">
+                <button class="tag active" data-tag="all">全部</button>
+                <button class="tag" data-tag="自然">自然风光</button>
+                <button class="tag" data-tag="历史">历史文化</button>
+                <button class="tag" data-tag="城市">城市探索</button>
+                <button class="tag" data-tag="美食">美食之旅</button>
+            </div>
+
+            <div class="places-grid" id="places-container">
+                <!-- 景点卡片将通过JavaScript动态加载 -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>正在加载景点...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分享区域 -->
+    <section id="share" class="share-section">
+        <div class="container">
+            <h2>分享你的旅行</h2>
+            <p class="section-subtitle">让朋友也发现这些美好地方</p>
+            
+            <div class="share-form">
+                <div class="form-group">
+                    <input type="text" id="place-name" placeholder="景点名称" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="place-location" placeholder="地点（城市/国家）" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="place-description" placeholder="描述这个景点的特色..." rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="place-image" placeholder="图片URL（可选）">
+                </div>
+                <div class="form-group">
+                    <div class="tag-selector">
+                        <span>选择标签：</span>
+                        <label><input type="checkbox" name="tags" value="自然"> 自然</label>
+                        <label><input type="checkbox" name="tags" value="历史"> 历史</label>
+                        <label><input type="checkbox" name="tags" value="城市"> 城市</label>
+                        <label><input type="checkbox" name="tags" value="美食"> 美食</label>
+                    </div>
+                </div>
+                <button id="submit-place" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> 分享景点
+                </button>
+                <div id="share-message" class="message"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于 -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2>关于这个网站</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>这是一个简单的旅游景点分享网站，专门为朋友之间分享旅行经历而设计。</p>
+                    <p>无需注册，无需复杂操作，只需分享你发现的美好地方。</p>
+                    <p>网站使用纯前端技术，数据保存在本地，方便快捷。</p>
+                </div>
+                <div class="about-features">
+                    <div class="feature">
+                        <i class="fas fa-share-alt"></i>
+                        <h3>轻松分享</h3>
+                        <p>一键分享景点给朋友</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>响应式设计</h3>
+                        <p>手机电脑都能完美查看</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-code"></i>
+                        <h3>开源免费</h3>
+                        <p>基于GitHub Pages部署</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-mountain-sun"></i>
+                    <span>旅行足迹</span>
+                </div>
+                <p>与朋友分享世界的美好</p>
+                <div class="social-links">
+                    <a href="#" title="分享到微信"><i class="fab fa-weixin"></i></a>
+                    <a href="#" title="分享到QQ"><i class="fab fa-qq"></i></a>
+                    <a href="#" title="复制链接"><i class="fas fa-link"></i></a>
+                </div>
+                <p class="copyright">© 2026 旅行足迹 | 由爪爪开发</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 景点详情模态框 -->
+    <div id="place-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-place-details">
+                <!-- 动态加载景点详情 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

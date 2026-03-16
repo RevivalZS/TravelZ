@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动打开GitHub Pages设置</title>
+    <script>
+        // 页面加载后自动打开GitHub Pages设置
+        window.onload = function() {
+            // 延迟1秒后打开
+            setTimeout(function() {
+                window.open('https://github.com/RevivalZS/revival/settings/pages', '_blank');
+                
+                // 显示操作指南
+                document.getElementById('guide').style.display = 'block';
+            }, 1000);
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #00b894, #00a085);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: left;
+            border-left: 3px solid #00b894;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #00b894;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #00b894;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .button:hover {
+            background: #00a085;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+        
+        .links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #00b894;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 自动打开GitHub Pages设置</h1>
+        
+        <div class="status">
+            <p><strong>✅ 代码推送成功！</strong></p>
+            <p>GitHub仓库：<a href="https://github.com/RevivalZS/revival" target="_blank">RevivalZS/revival</a></p>
+            <p>网站地址：<a href="https://revivalzs.github.io/revival/" target="_blank">https://revivalzs.github.io/revival/</a></p>
+        </div>
+        
+        <p>GitHub Pages设置页面已在新标签页打开。</p>
+        <p>如果未自动打开，请手动点击：</p>
+        
+        <a href="https://github.com/RevivalZS/revival/settings/pages" target="_blank" class="button">
+            📝 手动打开GitHub Pages设置
+        </a>
+        
+        <div id="guide" style="display: none; margin-top: 30px;">
+            <h3>📋 操作指南（在新打开的页面中操作）</h3>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>找到 "Source" 部分</strong>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>选择 "Deploy from a branch"</strong>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Branch 选择 "main"</strong>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Folder 选择 "/ (root)"</strong>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>点击 "Save" 按钮</strong>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>等待1-2分钟，然后访问你的网站</strong>
+            </div>
+        </div>
+        
+        <div class="links">
+            <h3>🔗 重要链接</h3>
+            <a href="https://github.com/RevivalZS/revival" target="_blank" class="link">📁 查看GitHub仓库</a>
+            <a href="https://revivalzs.github.io/revival/" target="_blank" class="link">🌐 访问你的网站</a>
+            <a href="index.html" target="_blank" class="link">🖥️ 本地预览网站</a>
+        </div>
+        
+        <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
+            <p>💡 提示：启用GitHub Pages后，网站将在1-2分钟内上线</p>
+            <p>🕐 时间：2026-03-12 21:36 | 由爪爪 🤝 协助</p>
+        </div>
+    </div>
+</body>
+</html>

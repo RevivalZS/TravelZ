@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片加载测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-item {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .image-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>旅游网站图片加载测试</h1>
+    
+    <div class="test-section">
+        <h2>当前问题分析</h2>
+        <p>问题：只能看到张家界的图片，其他图片无法显示</p>
+        <p>可能原因：</p>
+        <ul>
+            <li>Unsplash图片在中国访问受限</li>
+            <li>网络连接问题</li>
+            <li>图片URL失效</li>
+            <li>浏览器缓存问题</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>解决方案测试</h2>
+        
+        <h3>1. 使用Picsum.photos（可靠免费图片）</h3>
+        <div class="image-grid">
+            <div class="image-item">
+                <p>张家界 (Picsum)</p>
+                <img src="https://picsum.photos/800/600?random=1" alt="张家界" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+            <div class="image-item">
+                <p>故宫 (Picsum)</p>
+                <img src="https://picsum.photos/800/600?random=2" alt="故宫" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+            <div class="image-item">
+                <p>外滩 (Picsum)</p>
+                <img src="https://picsum.photos/800/600?random=3" alt="外滩" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+        </div>
+        
+        <h3>2. 使用Pexels（免费素材）</h3>
+        <div class="image-grid">
+            <div class="image-item">
+                <p>成都 (Pexels)</p>
+                <img src="https://images.pexels.com/photos/302083/pexels-photo-302083.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="成都" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+            <div class="image-item">
+                <p>西湖 (Pexels)</p>
+                <img src="https://images.pexels.com/photos/302084/pexels-photo-302084.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="西湖" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+            <div class="image-item">
+                <p>重庆 (Pexels)</p>
+                <img src="https://images.pexels.com/photos/302085/pexels-photo-302085.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="重庆" onerror="markError(this)">
+                <div class="status loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>实施步骤</h2>
+        <ol>
+            <li><strong>短期方案</strong>：修改 script.js，使用可靠的图片源（Picsum.photos）</li>
+            <li><strong>中期方案</strong>：下载图片到本地 images/ 文件夹</li>
+            <li><strong>长期方案</strong>：使用CDN或自己的图片存储</li>
+        </ol>
+        
+        <h3>立即修复步骤：</h3>
+        <pre><code>1. 打开 script.js 文件
+2. 找到图片URL部分
+3. 将Unsplash URL替换为：
+   - https://picsum.photos/800/600?random=1 (张家界)
+   - https://picsum.photos/800/600?random=2 (故宫)
+   - 以此类推...
+4. 添加图片加载失败处理</code></pre>
+    </div>
+    
+    <script>
+        function markError(img) {
+            const status = img.nextElementSibling;
+            status.className = 'status error';
+            status.textContent = '加载失败';
+        }
+        
+        // 图片加载成功处理
+        document.querySelectorAll('img').forEach(img => {
+            img.onload = function() {
+                const status = this.nextElementSibling;
+                if (status && status.classList.contains('loading')) {
+                    status.className = 'status success';
+                    status.textContent = '加载成功';
+                }
+            };
+        });
+    </script>
+</body>
+</html>

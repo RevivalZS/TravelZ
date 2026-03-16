@@ -1,0 +1,89 @@
+========================================
+SIMPLE DEPLOYMENT GUIDE
+========================================
+
+1. CHECK IF REPOSITORY EXISTS
+   Open: https://github.com/RevivalZS/revival
+   
+   If you see 404 (Not Found):
+   - Go to: https://github.com/new
+   - Repository name: revival
+   - Description: Travel website
+   - Public: YES
+   - DO NOT initialize README, .gitignore, license
+   - Click "Create repository"
+
+2. GENERATE ACCESS TOKEN (if needed)
+   - Go to: https://github.com/settings/tokens
+   - Click "Generate new token" -> "Generate new token (classic)"
+   - Note: Travel website
+   - Expiration: 90 days
+   - Select scopes: CHECK "repo" (all)
+   - Click "Generate token"
+   - COPY the token (only shown once)
+
+3. PUSH CODE
+   Open Command Prompt or PowerShell:
+   
+   cd "C:\Users\13419\.openclaw\workspace\travel-website"
+   git push -u origin main
+   
+   When asked:
+   - Username: RevivalZS
+   - Password: PASTE the token from step 2
+
+4. ENABLE GITHUB PAGES
+   - Open: https://github.com/RevivalZS/revival/settings/pages
+   - Source: Deploy from a branch
+   - Branch: main
+   - Folder: / (root)
+   - Click "Save"
+
+5. VISIT YOUR WEBSITE
+   Wait 1-2 minutes, then visit:
+   https://revivalzs.github.io/revival/
+
+========================================
+TROUBLESHOOTING
+========================================
+
+Problem: "Repository not found"
+Solution: Create repository first (step 1)
+
+Problem: "Authentication failed"
+Solution: Use access token, not password (step 2)
+
+Problem: "Permission denied"
+Solution: Make sure you own RevivalZS account
+
+Problem: Website not showing
+Solution: Wait 5 minutes, check Pages settings
+
+========================================
+QUICK COMMANDS
+========================================
+
+Check status:
+  git status
+
+Check remote:
+  git remote -v
+
+Push code:
+  git push -u origin main
+
+Force push (if first push failed):
+  git push -u origin main --force
+
+========================================
+YOUR INFO
+========================================
+
+GitHub:     RevivalZS
+Repository: revival
+Website:    https://revivalzs.github.io/revival/
+Local:      C:\Users\13419\.openclaw\workspace\travel-website\
+
+========================================
+READY TO DEPLOY!
+========================================

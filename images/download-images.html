@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>下载旅游图片</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .image-item { border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
+        .image-item img { width: 100%; height: 150px; object-fit: cover; }
+        .instructions { background: #f0f8ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>旅游网站图片下载助手</h1>
+    
+    <div class="instructions">
+        <h3>使用说明：</h3>
+        <p>1. 右键点击下面的图片，选择"另存为"</p>
+        <p>2. 保存到网站的 <code>images</code> 文件夹中</p>
+        <p>3. 按照以下文件名保存：</p>
+        <ul>
+            <li>张家界 → zhangjiajie.jpg</li>
+            <li>故宫 → forbidden-city.jpg</li>
+            <li>外滩 → bund.jpg</li>
+            <li>成都 → chengdu.jpg</li>
+            <li>西湖 → west-lake.jpg</li>
+            <li>重庆 → chongqing.jpg</li>
+        </ul>
+    </div>
+    
+    <div class="image-grid">
+        <!-- 张家界 -->
+        <div class="image-item">
+            <h4>张家界国家森林公园</h4>
+            <img src="https://images.pexels.com/photos/161401/fresh-snow-landscape-mountains-161401.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="张家界">
+            <p>保存为: zhangjiajie.jpg</p>
+        </div>
+        
+        <!-- 故宫 -->
+        <div class="image-item">
+            <h4>故宫博物院</h4>
+            <img src="https://images.pexels.com/photos/672532/pexels-photo-672532.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="故宫">
+            <p>保存为: forbidden-city.jpg</p>
+        </div>
+        
+        <!-- 外滩 -->
+        <div class="image-item">
+            <h4>上海外滩</h4>
+            <img src="https://images.pexels.com/photos/258447/pexels-photo-258447.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="外滩">
+            <p>保存为: bund.jpg</p>
+        </div>
+        
+        <!-- 成都 -->
+        <div class="image-item">
+            <h4>成都宽窄巷子</h4>
+            <img src="https://images.pexels.com/photos/302083/pexels-photo-302083.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="成都">
+            <p>保存为: chengdu.jpg</p>
+        </div>
+        
+        <!-- 西湖 -->
+        <div class="image-item">
+            <h4>杭州西湖</h4>
+            <img src="https://images.pexels.com/photos/302084/pexels-photo-302084.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="西湖">
+            <p>保存为: west-lake.jpg</p>
+        </div>
+        
+        <!-- 重庆 -->
+        <div class="image-item">
+            <h4>重庆洪崖洞</h4>
+            <img src="https://images.pexels.com/photos/302085/pexels-photo-302085.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=1" alt="重庆">
+            <p>保存为: chongqing.jpg</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #e8f5e9; border-radius: 5px;">
+        <h3>替代方案：</h3>
+        <p>如果上面的图片无法访问，可以使用以下免费图片网站：</p>
+        <ul>
+            <li><a href="https://pixabay.com/" target="_blank">Pixabay</a> - 免费高质量图片</li>
+            <li><a href="https://www.pexels.com/" target="_blank">Pexels</a> - 免费素材图片</li>
+            <li><a href="https://unsplash.com/" target="_blank">Unsplash</a> - 免费高清图片</li>
+        </ul>
+        <p>搜索关键词：中国旅游景点、风景、城市景观</p>
+    </div>
+</body>
+</html>
