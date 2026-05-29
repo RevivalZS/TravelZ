@@ -164,6 +164,9 @@ function createPlaceCard(place) {
                 <a href="${escapeHtml(mapLink)}" target="_blank" class="map-link-btn" title="在地图中查看位置">
                     <i class="fas fa-map"></i>
                 </a>
+                <button class="delete-btn" onclick="deletePlace(${place.id}, '${escapeHtml(place.name)}')" title="删除此景点">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
         </div>
     `;
@@ -561,6 +564,63 @@ window.showPlaceDetails = showPlaceDetails;
 window.shareToWeChat = shareToWeChat;
 window.copyShareLink = copyShareLink;
 window.handleImageError = handleImageError;
+window.deletePlace = deletePlace;
+
+// 删除景点
+async function deletePlace(id, name) {
+    if (!confirm(`确定要删除 "${name}" 吗？此操作不可恢复。`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/places/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            // 删除成功，刷新列表
+            loadPlaces();
+            // 显示成功提示
+            showToast(`"${name}" 已删除`);
+        } else {
+            const data = await response.json();
+            showToast(data.error || '删除失败', 'error');
+        }
+    } catch (error) {
+        console.error('删除失败:', error);
+        showToast('网络错误，请检查后端是否运行', 'error');
+    }
+}
+
+// 简单的提示框
+function showToast(message, type = 'success') {
+    // 移除已有的提示
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'error' ? '#e74c3c' : '#2ecc71'};
+    `;
+    document.body.appendChild(toast);
+
+    // 3秒后移除
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', init);
