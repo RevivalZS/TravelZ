@@ -6,6 +6,45 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
     ? ''  // 本地开发，使用相对路径（同源）
     : 'https://web-production-a1c5d.up.railway.app';  // ← 改成你的线上后端地址
 
+// 用户标识系统
+const USER_ID_KEY = 'travelz_user_id';
+const ADMIN_USER_ID = 'admin';  // 管理员用户ID
+
+// 获取或创建用户ID
+function getUserId() {
+    let userId = localStorage.getItem(USER_ID_KEY);
+    if (!userId) {
+        // 生成随机用户ID
+        userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(USER_ID_KEY, userId);
+    }
+    return userId;
+}
+
+// 检查是否是管理员
+function isAdmin() {
+    return localStorage.getItem(USER_ID_KEY) === ADMIN_USER_ID;
+}
+
+// 设置为管理员（需要密码）
+function setAdmin(password) {
+    // 简单密码验证，你可以改成更复杂的
+    if (password === 'travelz2024') {
+        localStorage.setItem(USER_ID_KEY, ADMIN_USER_ID);
+        return true;
+    }
+    return false;
+}
+
+// 初始化用户ID
+const currentUserId = getUserId();
+
+// 地理编码缓存
+const geocodeCache = {};
+
+// 图片缓存
+const imageCache = {};
+
 // 初始化数据
 let placesData = [];
 let currentFilter = 'all';
@@ -24,15 +63,40 @@ let modalMap = null;
 
 // 初始化函数
 async function init() {
+    // 更新管理员按钮状态
+    updateAdminButton();
+    
     await loadPlacesData();
     renderPlaces();
     setupEventListeners();
 }
 
+// 更新管理员按钮显示
+function updateAdminButton() {
+    const adminBtn = document.getElementById('admin-btn');
+    if (adminBtn) {
+        if (isAdmin()) {
+            adminBtn.textContent = '退出管理';
+            adminBtn.style.backgroundColor = '#e74c3c';
+            adminBtn.style.color = 'white';
+            adminBtn.style.borderColor = '#e74c3c';
+        } else {
+            adminBtn.textContent = '管理员';
+            adminBtn.style.backgroundColor = 'transparent';
+            adminBtn.style.color = '#666';
+            adminBtn.style.borderColor = '#ddd';
+        }
+    }
+}
+
 // 加载景点数据（从后端 API）
 async function loadPlacesData() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/places`);
+        const response = await fetch(`${API_BASE_URL}/api/places`, {
+            headers: {
+                'X-User-ID': currentUserId
+            }
+        });
         if (response.ok) {
             const data = await response.json();
             // 后端返回 lat/lng 独立字段，转成前端期望的 coordinates 格式
@@ -164,9 +228,11 @@ function createPlaceCard(place) {
                 <a href="${escapeHtml(mapLink)}" target="_blank" class="map-link-btn" title="在地图中查看位置">
                     <i class="fas fa-map"></i>
                 </a>
+                ${place.can_delete !== false ? `
                 <button class="delete-btn" onclick="deletePlace(${place.id}, '${escapeHtml(place.name)}')" title="删除此景点">
                     <i class="fas fa-trash"></i>
                 </button>
+                ` : ''}
             </div>
         </div>
     `;
@@ -238,6 +304,83 @@ function getMapLink(place) {
     // 没有坐标时，用地点名搜索
     const query = encodeURIComponent(place.name + ' ' + place.location);
     return `https://uri.amap.com/search?keyword=${query}`;
+}
+
+// 地理编码：将城市名称转换为坐标
+async function geocodeLocation(location) {
+    if (!location || location.trim() === '') return null;
+    
+    // 检查缓存
+    if (geocodeCache[location]) {
+        return geocodeCache[location];
+    }
+
+    try {
+        // 使用 Nominatim API（免费，无需 API key）
+        const encodedLocation = encodeURIComponent(location);
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodedLocation}&limit=1`,
+            {
+                headers: {
+                    'User-Agent': 'TravelZ-App/1.0'  // Nominatim 要求提供 User-Agent
+                }
+            }
+        );
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        if (data && data.length > 0) {
+            const result = {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon),
+                displayName: data[0].display_name
+            };
+            // 缓存结果
+            geocodeCache[location] = result;
+            return result;
+        }
+    } catch (error) {
+        console.warn('地理编码失败:', error);
+    }
+    return null;
+}
+
+// 搜索城市图片（使用 Unsplash Source 或 Lorem Picsum）
+async function searchCityImage(cityName) {
+    if (!cityName || cityName.trim() === '') return null;
+    
+    // 检查缓存
+    if (imageCache[cityName]) {
+        return imageCache[cityName];
+    }
+
+    try {
+        // 方案1：使用 Unsplash Source（免费，无需 API key，直接返回图片）
+        // 格式：https://source.unsplash.com/800x600/?城市名,旅游
+        const unsplashUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(cityName)},travel,city`;
+        
+        // 验证图片是否可用
+        const response = await fetch(unsplashUrl, { method: 'HEAD' });
+        if (response.ok) {
+            imageCache[cityName] = unsplashUrl;
+            return unsplashUrl;
+        }
+    } catch (error) {
+        console.warn('Unsplash 图片获取失败，使用备选方案');
+    }
+
+    // 方案2：使用 Lorem Picsum（总是可用）
+    // 根据城市名生成一个确定性的随机数，保证同一城市总是同一张图
+    const hash = cityName.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+    }, 0);
+    const imageId = Math.abs(hash) % 1000 + 1;  // 1-1000
+    const fallbackUrl = `https://picsum.photos/seed/${cityName}/800/600`;
+    
+    imageCache[cityName] = fallbackUrl;
+    return fallbackUrl;
 }
 
 // 获取图片URL，优先使用本地图片
@@ -466,6 +609,137 @@ function setupEventListeners() {
             handleShareSubmit();
         }
     });
+
+    // 地点输入实时预览（防抖）
+    const locationInput = document.getElementById('place-location');
+    let locationTimeout = null;
+    
+    if (locationInput) {
+        locationInput.addEventListener('input', (e) => {
+            // 清除之前的定时器
+            if (locationTimeout) {
+                clearTimeout(locationTimeout);
+            }
+            
+            // 设置新的定时器（500ms 后执行）
+            locationTimeout = setTimeout(() => {
+                const location = e.target.value.trim();
+                if (location.length >= 2) {
+                    updateLocationPreview(location);
+                } else {
+                    hideLocationPreview();
+                }
+            }, 500);
+        });
+    }
+}
+
+// 更新地点预览
+async function updateLocationPreview(location) {
+    const previewContainer = document.getElementById('map-preview-container');
+    const locationHint = document.getElementById('location-hint');
+    const mapPreview = document.getElementById('map-preview');
+    const imagePreview = document.getElementById('image-preview');
+
+    if (!previewContainer || !locationHint) return;
+
+    // 显示加载状态
+    locationHint.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在搜索位置...';
+    previewContainer.style.display = 'block';
+
+    try {
+        // 并行获取地理编码和图片
+        const [geoResult, cityImage] = await Promise.all([
+            geocodeLocation(location),
+            searchCityImage(location)
+        ]);
+
+        // 更新位置提示
+        if (geoResult) {
+            locationHint.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #00b894;"></i> ${geoResult.displayName || location}`;
+            
+            // 初始化地图预览
+            initMapPreview(mapPreview, geoResult.lat, geoResult.lng, location);
+        } else {
+            locationHint.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #e74c3c;"></i> 未找到该位置，提交后可手动定位';
+            mapPreview.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">无法加载地图预览</div>';
+        }
+
+        // 更新图片预览
+        if (cityImage) {
+            imagePreview.innerHTML = `
+                <img src="${cityImage}" alt="${location}" 
+                     onerror="this.parentElement.innerHTML='<span class=\\'image-error\\'>图片加载失败</span>'"
+                     onload="this.style.display='block'">
+                <div style="margin-top: 10px; font-size: 0.85rem; color: #666;">
+                    <i class="fas fa-image"></i> 自动获取的城市图片（可在上方覆盖自定义URL）
+                </div>
+            `;
+        } else {
+            imagePreview.innerHTML = '<span class="image-loading">正在搜索城市图片...</span>';
+        }
+
+    } catch (error) {
+        console.error('预览更新失败:', error);
+        locationHint.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #f39c12;"></i> 预览加载失败，但不影响提交';
+    }
+}
+
+// 隐藏地点预览
+function hideLocationPreview() {
+    const previewContainer = document.getElementById('map-preview-container');
+    const locationHint = document.getElementById('location-hint');
+    
+    if (previewContainer) {
+        previewContainer.style.display = 'none';
+    }
+    if (locationHint) {
+        locationHint.innerHTML = '';
+    }
+}
+
+// 初始化地图预览
+let previewMap = null;
+
+function initMapPreview(container, lat, lng, locationName) {
+    if (!container) return;
+
+    // 清除之前的地图
+    if (previewMap) {
+        previewMap.remove();
+        previewMap = null;
+    }
+
+    try {
+        // 清空容器
+        container.innerHTML = '';
+        
+        // 初始化 Leaflet 地图
+        previewMap = L.map(container).setView([lat, lng], 12);
+        
+        // 添加地图瓦片
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 18
+        }).addTo(previewMap);
+
+        // 添加标记
+        L.marker([lat, lng])
+            .addTo(previewMap)
+            .bindPopup(`<b>${locationName}</b>`)
+            .openPopup();
+
+        // 确保地图正确渲染
+        setTimeout(() => {
+            if (previewMap) {
+                previewMap.invalidateSize();
+            }
+        }, 100);
+
+    } catch (error) {
+        console.error('地图预览初始化失败:', error);
+        container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">地图加载失败</div>';
+    }
 }
 
 // 处理分享提交
@@ -489,21 +763,40 @@ async function handleShareSubmit() {
         return;
     }
 
-    // 提交到后端 API
-    const newPlace = {
-        name: nameInput.value.trim(),
-        location: locationInput.value.trim(),
-        description: descriptionInput.value.trim(),
-        image: imageInput.value.trim() || '',
-        tags: selectedTags,
-        lat: 0,
-        lng: 0
-    };
+    // 显示加载状态
+    const submitBtn = document.getElementById('submit-place');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在处理...';
+    submitBtn.disabled = true;
 
     try {
+        // 获取输入值
+        const location = locationInput.value.trim();
+        const imageUrl = imageInput.value.trim();
+
+        // 并行执行地理编码和图片搜索
+        const [geoResult, cityImage] = await Promise.all([
+            geocodeLocation(location),
+            imageUrl ? Promise.resolve(null) : searchCityImage(location)
+        ]);
+
+        // 构建新景点数据
+        const newPlace = {
+            name: nameInput.value.trim(),
+            location: location,
+            description: descriptionInput.value.trim(),
+            image: imageUrl || cityImage || '',
+            tags: selectedTags,
+            lat: geoResult ? geoResult.lat : 0,
+            lng: geoResult ? geoResult.lng : 0
+        };
+
         const response = await fetch(`${API_BASE_URL}/api/places`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-User-ID': currentUserId
+            },
             body: JSON.stringify(newPlace)
         });
 
@@ -522,8 +815,15 @@ async function handleShareSubmit() {
         imageInput.value = '';
         tagCheckboxes.forEach(cb => cb.checked = false);
 
-        // 显示成功消息
-        showMessage('景点分享成功！已添加到推荐列表。', 'success');
+        // 显示成功消息（包含地理编码结果）
+        let successMsg = '景点分享成功！已添加到推荐列表。';
+        if (geoResult) {
+            successMsg += `\n📍 已自动定位：${geoResult.displayName || location}`;
+        }
+        if (cityImage && !imageUrl) {
+            successMsg += '\n🖼️ 已自动获取城市图片';
+        }
+        showMessage(successMsg, 'success');
 
         // 重新加载数据并渲染
         await loadPlacesData();
@@ -542,6 +842,10 @@ async function handleShareSubmit() {
     } catch (error) {
         console.error('提交失败:', error);
         showMessage('网络错误，请检查后端是否运行', 'error');
+    } finally {
+        // 恢复按钮状态
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
 }
 
@@ -565,6 +869,36 @@ window.shareToWeChat = shareToWeChat;
 window.copyShareLink = copyShareLink;
 window.handleImageError = handleImageError;
 window.deletePlace = deletePlace;
+window.showAdminLogin = showAdminLogin;
+window.logoutAdmin = logoutAdmin;
+
+// 管理员登录
+function showAdminLogin() {
+    if (isAdmin()) {
+        // 已经是管理员，显示退出选项
+        if (confirm('你已经是管理员，是否退出管理员模式？')) {
+            localStorage.removeItem(USER_ID_KEY);
+            location.reload();
+        }
+        return;
+    }
+
+    const password = prompt('请输入管理员密码：');
+    if (password === null) return;  // 用户取消
+
+    if (setAdmin(password)) {
+        showToast('管理员登录成功！');
+        setTimeout(() => location.reload(), 1000);
+    } else {
+        showToast('密码错误', 'error');
+    }
+}
+
+// 退出管理员
+function logoutAdmin() {
+    localStorage.removeItem(USER_ID_KEY);
+    location.reload();
+}
 
 // 删除景点
 async function deletePlace(id, name) {
@@ -574,7 +908,10 @@ async function deletePlace(id, name) {
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/places/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'X-User-ID': currentUserId
+            }
         });
 
         if (response.ok) {

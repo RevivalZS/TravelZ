@@ -44,9 +44,17 @@ def init_db():
             tags TEXT DEFAULT '[]',
             lat REAL DEFAULT 0,
             lng REAL DEFAULT 0,
+            user_id TEXT DEFAULT 'anonymous',
             created_at TEXT DEFAULT (datetime('now', 'localtime'))
         )
     ''')
+
+    # 检查是否需要添加 user_id 列（兼容旧数据库）
+    cursor.execute("PRAGMA table_info(places)")
+    columns = [col[1] for col in cursor.fetchall()]
+    if 'user_id' not in columns:
+        cursor.execute("ALTER TABLE places ADD COLUMN user_id TEXT DEFAULT 'anonymous'")
+        print("✅ 已添加 user_id 列")
 
     # 如果表是空的，从 places.json 导入初始数据
     cursor.execute('SELECT COUNT(*) FROM places')
@@ -57,8 +65,8 @@ def init_db():
             for p in data.get('places', []):
                 coords = p.get('coordinates', {})
                 cursor.execute('''
-                    INSERT INTO places (id, name, location, description, image, tags, lat, lng)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO places (id, name, location, description, image, tags, lat, lng, user_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     p['id'],
                     p['name'],
@@ -67,7 +75,8 @@ def init_db():
                     p.get('image', ''),
                     json.dumps(p.get('tags', []), ensure_ascii=False),
                     coords.get('lat', 0),
-                    coords.get('lng', 0)
+                    coords.get('lng', 0),
+                    'admin'  # 初始数据标记为管理员
                 ))
             print(f"✅ 已从 places.json 导入 {len(data.get('places', []))} 条景点数据")
         except FileNotFoundError:
@@ -95,6 +104,7 @@ def static_files(filename):
 def get_places():
     """获取所有景点，支持标签筛选"""
     tag = request.args.get('tag', '')
+    user_id = request.headers.get('X-User-ID', 'anonymous')
     conn = get_db()
     cursor = conn.cursor()
 
@@ -106,6 +116,8 @@ def get_places():
         for row in rows:
             place = dict(row)
             place['tags'] = json.loads(place['tags'])
+            # 添加权限信息
+            place['can_delete'] = user_id == 'admin' or place.get('user_id') == user_id
             if tag in place['tags']:
                 places.append(place)
     else:
@@ -115,6 +127,8 @@ def get_places():
         for row in rows:
             place = dict(row)
             place['tags'] = json.loads(place['tags'])
+            # 添加权限信息
+            place['can_delete'] = user_id == 'admin' or place.get('user_id') == user_id
             places.append(place)
 
     conn.close()
@@ -142,6 +156,8 @@ def get_place(place_id):
 def create_place():
     """创建新景点"""
     data = request.get_json()
+    user_id = request.headers.get('X-User-ID', 'anonymous')
+    
     if not data:
         return jsonify({'error': '请提供 JSON 数据'}), 400
 
@@ -164,8 +180,8 @@ def create_place():
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''
-        INSERT INTO places (name, location, description, image, tags, lat, lng)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO places (name, location, description, image, tags, lat, lng, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         data['name'].strip(),
         data['location'].strip(),
@@ -173,7 +189,8 @@ def create_place():
         data.get('image', '').strip(),
         json.dumps(tags, ensure_ascii=False),
         float(data.get('lat', 0)),
-        float(data.get('lng', 0))
+        float(data.get('lng', 0)),
+        user_id
     ))
     conn.commit()
     new_id = cursor.lastrowid
@@ -232,12 +249,23 @@ def update_place(place_id):
 @app.route('/api/places/<int:place_id>', methods=['DELETE'])
 def delete_place(place_id):
     """删除景点"""
+    user_id = request.headers.get('X-User-ID', 'anonymous')
     conn = get_db()
     cursor = conn.cursor()
+    
     cursor.execute("SELECT * FROM places WHERE id = ?", (place_id,))
-    if cursor.fetchone() is None:
+    place = cursor.fetchone()
+    
+    if place is None:
         conn.close()
         return jsonify({'error': '景点不存在'}), 404
+    
+    place = dict(place)
+    
+    # 权限检查：admin 可以删除所有，普通用户只能删除自己创建的
+    if user_id != 'admin' and place.get('user_id') != user_id:
+        conn.close()
+        return jsonify({'error': '没有权限删除此景点'}), 403
 
     cursor.execute("DELETE FROM places WHERE id = ?", (place_id,))
     conn.commit()

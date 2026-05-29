@@ -79,6 +79,23 @@ body {
     background-color: #00a085;
 }
 
+.btn-admin {
+    background-color: transparent;
+    color: #666;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-admin:hover {
+    background-color: #f0f0f0;
+    color: #333;
+    border-color: #ccc;
+}
+
 /* 英雄区域 */
 .hero {
     background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
@@ -436,6 +453,59 @@ body {
     padding: 10px;
     border-radius: 5px;
     text-align: center;
+}
+
+/* 地图预览区域 */
+.location-hint {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+.map-preview-container {
+    margin: 20px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+.map-preview-header {
+    background-color: #00b894;
+    color: white;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.map-preview {
+    height: 250px;
+    width: 100%;
+}
+
+.image-preview {
+    padding: 15px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview .image-loading {
+    color: #999;
+    font-style: italic;
+}
+
+.image-preview .image-error {
+    color: #e74c3c;
+    font-size: 0.9rem;
 }
 
 .message.success {
