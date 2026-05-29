@@ -249,32 +249,24 @@ function createPlaceCard(place) {
 
 // 图片加载错误处理（多级回退）
 function handleImageError(img) {
-    const unsplashUrl = img.dataset.unsplash;
-    const fallbackUrl = img.dataset.fallback;
+    const placeId = img.closest('.place-card')?.dataset?.id || '1';
+    const fallbackImages = getFallbackImages(placeId);
+    
+    // 获取当前图片的 src
     const currentSrc = img.src;
-
-    // 如果当前已经是回退图片，不再重试
-    if (currentSrc === fallbackUrl || currentSrc.includes('picsum.photos')) {
-        img.onerror = null;
-        img.src = getDefaultImage();
-        return;
+    
+    // 尝试下一个备选图片
+    for (let i = 0; i < fallbackImages.length - 1; i++) {
+        if (currentSrc.includes(fallbackImages[i]) || 
+            currentSrc === fallbackImages[i]) {
+            img.src = fallbackImages[i + 1];
+            return;
+        }
     }
-
-    // 如果当前不是Unsplash且有不重复的Unsplash URL，尝试Unsplash
-    if (unsplashUrl && !currentSrc.includes('unsplash') && currentSrc !== unsplashUrl) {
-        img.src = unsplashUrl;
-        return;
-    }
-
-    // 否则使用picsum回退
-    if (fallbackUrl && currentSrc !== fallbackUrl) {
-        img.src = fallbackUrl;
-        return;
-    }
-
-    // 最终回退
-    img.onerror = null;
-    img.src = getDefaultImage();
+    
+    // 如果所有备选都失败，使用默认占位图
+    img.onerror = null;  // 防止无限循环
+    img.src = `https://via.placeholder.com/800x600/e74c3c/ffffff?text=Image+Not+Found`;
 }
 
 // HTML转义
@@ -383,44 +375,53 @@ async function searchCityImage(cityName) {
     return fallbackUrl;
 }
 
-// 获取图片URL，优先使用本地图片
+// 预定义的风景图片库（确保图片质量和相关性）
+const TRAVEL_IMAGES = [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',  // 山景
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop',  // 自然风光
+    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=600&fit=crop',  // 湖泊
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=600&fit=crop',  // 日落
+    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop',  // 森林
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop',  // 海滩
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop',  // 雪山
+    'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=600&fit=crop',  // 瀑布
+    'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=800&h=600&fit=crop',  // 城市夜景
+    'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=800&h=600&fit=crop',  // 东京
+    'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=800&h=600&fit=crop',  // 长城
+    'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&h=600&fit=crop',  // 古镇
+];
+
+// 获取图片URL
 function getImageUrl(place) {
-    // 如果有本地图片，优先使用
-    const localImages = {
-        1: 'images/zhangjiajie.jpg',
-        2: 'images/forbidden-city.jpg',
-        3: 'images/bund.jpg',
-        4: 'images/chengdu.jpg',
-        5: 'images/west-lake.jpg',
-        6: 'images/chongqing.jpg'
-    };
-
-    if (localImages[place.id]) {
-        return localImages[place.id];
+    // 如果用户提供了自定义图片URL，优先使用
+    if (place.image && place.image.trim() !== '') {
+        return place.image;
     }
+    
+    // 根据景点ID从预定义图片库中选择（循环使用）
+    const imageIndex = (place.id - 1) % TRAVEL_IMAGES.length;
+    return TRAVEL_IMAGES[imageIndex];
+}
 
-    // 否则使用原始URL
-    return place.image || getFallbackImage(place.id);
+// 获取备用图片列表（多个备选源）
+function getFallbackImages(placeId) {
+    const primaryIndex = (placeId - 1) % TRAVEL_IMAGES.length;
+    return [
+        TRAVEL_IMAGES[primaryIndex],
+        TRAVEL_IMAGES[(primaryIndex + 1) % TRAVEL_IMAGES.length],
+        `https://via.placeholder.com/800x600/00b894/ffffff?text=Travel+Spot`
+    ];
 }
 
 // 获取备用图片
 function getFallbackImage(placeId) {
-    // 根据景点ID返回不同的备用图片
-    const fallbackImages = {
-        1: 'https://picsum.photos/800/600?random=1',
-        2: 'https://picsum.photos/800/600?random=2',
-        3: 'https://picsum.photos/800/600?random=3',
-        4: 'https://picsum.photos/800/600?random=4',
-        5: 'https://picsum.photos/800/600?random=5',
-        6: 'https://picsum.photos/800/600?random=6'
-    };
-
-    return fallbackImages[placeId] || getDefaultImage();
+    const images = getFallbackImages(placeId);
+    return images[0];
 }
 
 // 获取默认图片
 function getDefaultImage() {
-    return 'https://picsum.photos/800/600?random=999';
+    return TRAVEL_IMAGES[0];
 }
 
 // 显示景点详情
@@ -512,9 +513,11 @@ function initModalMap(place) {
     try {
         modalMap = L.map(mapEl).setView([lat, lng], 13);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            maxZoom: 18
+        // 使用高德地图瓦片（标准图层）
+        L.tileLayer('http://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7', {
+            attribution: '&copy; 高德地图',
+            maxZoom: 18,
+            subdomains: ['1', '2', '3', '4']
         }).addTo(modalMap);
 
         L.marker([lat, lng])
@@ -717,10 +720,11 @@ function initMapPreview(container, lat, lng, locationName) {
         // 初始化 Leaflet 地图
         previewMap = L.map(container).setView([lat, lng], 12);
         
-        // 添加地图瓦片
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            maxZoom: 18
+        // 使用高德地图瓦片（标准图层）
+        L.tileLayer('http://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7', {
+            attribution: '&copy; 高德地图',
+            maxZoom: 18,
+            subdomains: ['1', '2', '3', '4']
         }).addTo(previewMap);
 
         // 添加标记
@@ -916,7 +920,8 @@ async function deletePlace(id, name) {
 
         if (response.ok) {
             // 删除成功，刷新列表
-            loadPlaces();
+            await loadPlacesData();
+            renderPlaces();
             // 显示成功提示
             showToast(`"${name}" 已删除`);
         } else {
