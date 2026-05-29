@@ -4,7 +4,7 @@
 // 部署到线上后，把下面的地址改成你的后端实际地址
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? ''  // 本地开发，使用相对路径（同源）
-    : 'https://travelz-backend.up.railway.app';  // ← 改成你的线上后端地址
+    : 'https://web-production-a1c5d.up.railway.app';  // ← 改成你的线上后端地址
 
 // 初始化数据
 let placesData = [];
