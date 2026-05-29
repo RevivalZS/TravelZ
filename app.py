@@ -248,12 +248,16 @@ def delete_place(place_id):
 
 # ─── 启动 ───────────────────────────────────────────────────
 
+# 确保数据目录存在
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
 if __name__ == '__main__':
     print("=" * 50)
     print("🗺️  旅行足迹 - 后端服务")
     print("=" * 50)
     init_db()
     print(f"📁 数据库: {DB_PATH}")
-    print(f"🌐 访问: http://localhost:5000")
+    port = int(os.environ.get('PORT', 5000))
+    print(f"🌐 访问: http://localhost:{port}")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

@@ -1,5 +1,11 @@
 // 旅游景点网站 - 主脚本
 
+// API 配置
+// 部署到线上后，把下面的地址改成你的后端实际地址
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''  // 本地开发，使用相对路径（同源）
+    : 'https://travelz-backend.up.railway.app';  // ← 改成你的线上后端地址
+
 // 初始化数据
 let placesData = [];
 let currentFilter = 'all';
@@ -26,7 +32,7 @@ async function init() {
 // 加载景点数据（从后端 API）
 async function loadPlacesData() {
     try {
-        const response = await fetch('/api/places');
+        const response = await fetch(`${API_BASE_URL}/api/places`);
         if (response.ok) {
             const data = await response.json();
             // 后端返回 lat/lng 独立字段，转成前端期望的 coordinates 格式
@@ -492,7 +498,7 @@ async function handleShareSubmit() {
     };
 
     try {
-        const response = await fetch('/api/places', {
+        const response = await fetch(`${API_BASE_URL}/api/places`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newPlace)
