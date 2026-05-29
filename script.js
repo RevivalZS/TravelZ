@@ -23,32 +23,24 @@ async function init() {
     setupEventListeners();
 }
 
-// 加载景点数据
+// 加载景点数据（从后端 API）
 async function loadPlacesData() {
     try {
-        // 尝试从本地存储加载
-        const savedPlaces = localStorage.getItem('travelPlaces');
-
-        if (savedPlaces) {
-            placesData = JSON.parse(savedPlaces);
+        const response = await fetch('/api/places');
+        if (response.ok) {
+            const data = await response.json();
+            // 后端返回 lat/lng 独立字段，转成前端期望的 coordinates 格式
+            placesData = (data.places || []).map(p => ({
+                ...p,
+                coordinates: { lat: p.lat || 0, lng: p.lng || 0 }
+            }));
         } else {
-            // 加载默认数据
-            const response = await fetch('data/places.json');
-            if (response.ok) {
-                const data = await response.json();
-                placesData = data.places || [];
-                // 保存到本地存储
-                localStorage.setItem('travelPlaces', JSON.stringify(placesData));
-            } else {
-                // 如果文件不存在，使用示例数据
-                placesData = getSamplePlaces();
-                localStorage.setItem('travelPlaces', JSON.stringify(placesData));
-            }
+            console.warn('API 请求失败，使用示例数据');
+            placesData = getSamplePlaces();
         }
     } catch (error) {
         console.error('加载数据失败:', error);
         placesData = getSamplePlaces();
-        localStorage.setItem('travelPlaces', JSON.stringify(placesData));
     }
 }
 
@@ -468,7 +460,7 @@ function setupEventListeners() {
 }
 
 // 处理分享提交
-function handleShareSubmit() {
+async function handleShareSubmit() {
     const nameInput = document.getElementById('place-name');
     const locationInput = document.getElementById('place-location');
     const descriptionInput = document.getElementById('place-description');
@@ -488,45 +480,60 @@ function handleShareSubmit() {
         return;
     }
 
-    // 创建新景点
+    // 提交到后端 API
     const newPlace = {
-        id: Date.now(), // 使用时间戳作为ID
         name: nameInput.value.trim(),
         location: locationInput.value.trim(),
         description: descriptionInput.value.trim(),
         image: imageInput.value.trim() || '',
         tags: selectedTags,
-        coordinates: { lat: 0, lng: 0 } // 用户添加的景点暂无精确坐标
+        lat: 0,
+        lng: 0
     };
 
-    // 添加到数据
-    placesData.unshift(newPlace);
+    try {
+        const response = await fetch('/api/places', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPlace)
+        });
 
-    // 保存到本地存储
-    localStorage.setItem('travelPlaces', JSON.stringify(placesData));
-
-    // 清空表单
-    nameInput.value = '';
-    locationInput.value = '';
-    descriptionInput.value = '';
-    imageInput.value = '';
-    tagCheckboxes.forEach(cb => cb.checked = false);
-
-    // 显示成功消息
-    showMessage('景点分享成功！已添加到推荐列表。', 'success');
-
-    // 重新渲染景点（显示最新添加的）
-    currentFilter = 'all';
-    filterTags.forEach(tag => {
-        tag.classList.remove('active');
-        if (tag.dataset.tag === 'all') {
-            tag.classList.add('active');
+        if (!response.ok) {
+            const err = await response.json();
+            showMessage(err.error || '提交失败，请重试', 'error');
+            return;
         }
-    });
-    renderPlaces();
 
-    // 滚动到景点区域
-    document.getElementById('places').scrollIntoView({ behavior: 'smooth' });
+        const result = await response.json();
+
+        // 清空表单
+        nameInput.value = '';
+        locationInput.value = '';
+        descriptionInput.value = '';
+        imageInput.value = '';
+        tagCheckboxes.forEach(cb => cb.checked = false);
+
+        // 显示成功消息
+        showMessage('景点分享成功！已添加到推荐列表。', 'success');
+
+        // 重新加载数据并渲染
+        await loadPlacesData();
+        currentFilter = 'all';
+        filterTags.forEach(tag => {
+            tag.classList.remove('active');
+            if (tag.dataset.tag === 'all') {
+                tag.classList.add('active');
+            }
+        });
+        renderPlaces();
+
+        // 滚动到景点区域
+        document.getElementById('places').scrollIntoView({ behavior: 'smooth' });
+
+    } catch (error) {
+        console.error('提交失败:', error);
+        showMessage('网络错误，请检查后端是否运行', 'error');
+    }
 }
 
 // 显示消息
