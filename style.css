@@ -617,6 +617,141 @@ footer {
     font-size: 0.9rem;
 }
 
+/* 分享弹窗 */
+.share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.share-modal.show {
+    opacity: 1;
+}
+
+.share-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.share-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    overflow: hidden;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.share-modal.show .share-modal-content {
+    transform: translateY(0);
+}
+
+.share-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.share-modal-header i {
+    font-size: 1.4rem;
+}
+
+.share-modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.share-modal-close:hover {
+    color: #333;
+}
+
+.share-modal-body {
+    padding: 20px;
+}
+
+.share-tip {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.share-preview {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.share-preview-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.share-preview-desc {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.share-preview-url {
+    color: #00b894;
+    font-size: 0.8rem;
+    word-break: break-all;
+}
+
+.share-copy-btn {
+    width: 100%;
+    padding: 14px;
+    background: #00b894;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.share-copy-btn:hover {
+    background: #00a085;
+}
+
+.share-copy-btn i {
+    font-size: 1.1rem;
+}
+
 /* 模态框 */
 .modal {
     display: none;

@@ -875,6 +875,142 @@ window.handleImageError = handleImageError;
 window.deletePlace = deletePlace;
 window.showAdminLogin = showAdminLogin;
 window.logoutAdmin = logoutAdmin;
+window.shareToWeChatPage = shareToWeChatPage;
+window.shareToQQ = shareToQQ;
+window.copyPageLink = copyPageLink;
+window.showShareModal = showShareModal;
+window.copyAndOpenApp = copyAndOpenApp;
+window.openApp = openApp;
+
+// 分享整个页面到微信
+function shareToWeChatPage() {
+    const pageUrl = window.location.href;
+    const pageTitle = '旅行足迹 - 发现世界的美好';
+    const pageDesc = '记录你的旅行足迹，与朋友分享精彩瞬间';
+    
+    // 显示分享弹窗
+    showShareModal('微信', pageUrl, pageTitle, pageDesc, 'weixin');
+}
+
+// 分享到QQ
+function shareToQQ() {
+    const pageUrl = window.location.href;
+    const pageTitle = '旅行足迹 - 发现世界的美好';
+    const pageDesc = '记录你的旅行足迹，与朋友分享精彩瞬间';
+    
+    // 显示分享弹窗
+    showShareModal('QQ', pageUrl, pageTitle, pageDesc, 'qq');
+}
+
+// 显示分享弹窗
+function showShareModal(platform, url, title, desc, type) {
+    // 移除已有的弹窗
+    const existing = document.querySelector('.share-modal');
+    if (existing) existing.remove();
+    
+    // 创建弹窗
+    const modal = document.createElement('div');
+    modal.className = 'share-modal';
+    modal.innerHTML = `
+        <div class="share-modal-overlay" onclick="this.parentElement.remove()"></div>
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <i class="fab fa-${type === 'weixin' ? 'weixin' : 'qq'}" style="color: ${type === 'weixin' ? '#07c160' : '#12b7f5'}"></i>
+                <span>分享到${platform}</span>
+                <button class="share-modal-close" onclick="this.closest('.share-modal').remove()">&times;</button>
+            </div>
+            <div class="share-modal-body">
+                <p class="share-tip">即将打开${platform}，分享内容将自动复制到剪贴板</p>
+                <div class="share-preview">
+                    <div class="share-preview-title">${title}</div>
+                    <div class="share-preview-desc">${desc}</div>
+                    <div class="share-preview-url">${url}</div>
+                </div>
+                <button class="share-copy-btn" onclick="copyAndOpenApp('${type}', '${url}', '${title}', '${desc}')">
+                    <i class="fab fa-${type === 'weixin' ? 'weixin' : 'qq'}"></i> 打开${platform}并分享
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 显示动画
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+
+// 复制内容并打开应用
+function copyAndOpenApp(type, url, title, desc) {
+    const shareText = `${title}\n${desc}\n\n${url}`;
+    const platform = type === 'weixin' ? '微信' : 'QQ';
+    
+    // 先复制内容到剪贴板
+    navigator.clipboard.writeText(shareText).then(() => {
+        showToast('内容已复制，正在打开' + platform + '...');
+        // 尝试打开应用
+        openApp(type);
+    }).catch(err => {
+        // 降级方案
+        const textarea = document.createElement('textarea');
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('内容已复制，正在打开' + platform + '...');
+        openApp(type);
+    });
+    
+    // 关闭弹窗
+    document.querySelector('.share-modal')?.remove();
+}
+
+// 尝试打开应用
+function openApp(type) {
+    if (type === 'weixin') {
+        // 微信 URL Scheme
+        const appUrl = 'weixin://';
+        
+        // 尝试打开应用
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = appUrl;
+        document.body.appendChild(iframe);
+        
+        // 1秒后移除iframe
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+        }, 1000);
+    } else if (type === 'qq') {
+        // QQ 使用分享链接页面
+        const pageUrl = encodeURIComponent(window.location.href);
+        const pageTitle = encodeURIComponent('旅行足迹 - 发现世界的美好');
+        const pageDesc = encodeURIComponent('记录你的旅行足迹，与朋友分享精彩瞬间');
+        
+        const qqShareUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${pageUrl}&title=${pageTitle}&desc=${pageDesc}`;
+        window.open(qqShareUrl, '_blank', 'width=600,height=500');
+    }
+}
+
+// 复制页面链接
+function copyPageLink() {
+    const pageUrl = window.location.href;
+    
+    navigator.clipboard.writeText(pageUrl).then(() => {
+        showToast('页面链接已复制到剪贴板！');
+    }).catch(err => {
+        // 降级方案
+        const textarea = document.createElement('textarea');
+        textarea.value = pageUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('页面链接已复制到剪贴板！');
+    });
+}
 
 // 管理员登录
 function showAdminLogin() {
