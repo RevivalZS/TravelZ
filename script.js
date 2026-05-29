@@ -432,8 +432,6 @@ function showPlaceDetails(placeId) {
     const modalDetails = document.getElementById('modal-place-details');
 
     const imageUrl = getImageUrl(place);
-    const fallbackUrl = getFallbackImage(place.id);
-    const unsplashUrl = place.image || '';
     const mapLink = getMapLink(place);
 
     // 处理标签
@@ -454,10 +452,6 @@ function showPlaceDetails(placeId) {
         ? `<div class="modal-map-container">
             <h3><i class="fas fa-map"></i> 位置地图</h3>
             <div id="modal-leaflet-map" class="leaflet-map-container"></div>
-            <div class="map-fallback-msg" style="display:none;">
-                <i class="fas fa-map-marked-alt"></i>
-                <p>互动地图加载中...</p>
-            </div>
             <a href="${escapeHtml(mapLink)}" target="_blank" class="map-open-link">
                 <i class="fas fa-external-link-alt"></i> 在高德地图中打开
             </a>
@@ -465,30 +459,39 @@ function showPlaceDetails(placeId) {
         : `<div class="modal-map-container no-coords">
             <i class="fas fa-map-marked-alt"></i>
             <p>暂无精确位置坐标</p>
-            <a href="${escapeHtml(mapLink)}" target="_blank" class="btn-secondary">搜索位置</a>
+            <a href="${escapeHtml(mapLink)}" target="_blank" class="map-open-link">
+                <i class="fas fa-search"></i> 在高德地图中搜索
+            </a>
            </div>`;
 
     modalDetails.innerHTML = `
-        <img src="${escapeHtml(imageUrl)}" alt="${place.name}" class="modal-place-image"
-             data-unsplash="${escapeHtml(unsplashUrl)}"
-             data-fallback="${escapeHtml(fallbackUrl)}"
-             onerror="handleImageError(this);">
-        <h2>${place.name}</h2>
-        <div class="place-location" style="margin-bottom: 10px;">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>${place.location}</span>
-        </div>
-        ${coordInfo}
-        <div class="place-tags" style="margin-bottom: 20px;">${tagsHtml}</div>
-        <p style="margin-bottom: 20px; line-height: 1.8;">${place.description}</p>
-        ${mapSection}
-        <div style="display: flex; gap: 10px; margin-top: 30px;">
-            <button class="btn-primary" onclick="shareToWeChat(${placeId})">
-                <i class="fab fa-weixin"></i> 分享到微信
-            </button>
-            <button class="btn-secondary" onclick="copyShareLink(${placeId})">
-                <i class="fas fa-link"></i> 复制链接
-            </button>
+        <div class="modal-place-content">
+            <div class="modal-image-container">
+                <img src="${escapeHtml(imageUrl)}" alt="${place.name}" 
+                     onerror="handleImageError(this);">
+            </div>
+            <div class="modal-details">
+                <h2 class="modal-place-name">${place.name}</h2>
+                <div class="modal-place-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${place.location}</span>
+                </div>
+                ${coordInfo}
+                <div class="place-tags">${tagsHtml}</div>
+                <p class="modal-place-description">${place.description}</p>
+                ${mapSection}
+                <div class="modal-share-actions">
+                    <button class="btn-share-wechat" onclick="sharePlaceToWeChat(${placeId})">
+                        <i class="fab fa-weixin"></i> 分享到微信
+                    </button>
+                    <button class="btn-share-qq" onclick="sharePlaceToQQ(${placeId})">
+                        <i class="fab fa-qq"></i> 分享到QQ
+                    </button>
+                    <button class="btn-share-link" onclick="copyPlaceLink(${placeId})">
+                        <i class="fas fa-link"></i> 复制链接
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 
@@ -496,9 +499,77 @@ function showPlaceDetails(placeId) {
 
     // 初始化Leaflet地图
     if (hasValidCoordinates(place)) {
-        // 等DOM更新后再初始化地图
         setTimeout(() => initModalMap(place), 100);
     }
+}
+
+// 分享景点到微信
+function sharePlaceToWeChat(placeId) {
+    const place = placesData.find(p => p.id === placeId);
+    if (!place) return;
+
+    const mapLink = getMapLink(place);
+    const shareText = `推荐一个超棒的景点：${place.name}（${place.location}）\n${place.description}\n\n查看地图：${mapLink}\n\n来自「旅行足迹」分享`;
+
+    // 复制内容并尝试打开微信
+    navigator.clipboard.writeText(shareText).then(() => {
+        showToast('分享内容已复制，正在打开微信...');
+        openApp('weixin');
+    }).catch(err => {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('分享内容已复制，正在打开微信...');
+        openApp('weixin');
+    });
+}
+
+// 分享景点到QQ
+function sharePlaceToQQ(placeId) {
+    const place = placesData.find(p => p.id === placeId);
+    if (!place) return;
+
+    const mapLink = getMapLink(place);
+    const shareText = `推荐一个超棒的景点：${place.name}（${place.location}）\n${place.description}\n\n查看地图：${mapLink}\n\n来自「旅行足迹」分享`;
+
+    // 复制内容并打开QQ分享页面
+    navigator.clipboard.writeText(shareText).then(() => {
+        showToast('分享内容已复制，正在打开QQ...');
+        openApp('qq');
+    }).catch(err => {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('分享内容已复制，正在打开QQ...');
+        openApp('qq');
+    });
+}
+
+// 复制景点链接
+function copyPlaceLink(placeId) {
+    const place = placesData.find(p => p.id === placeId);
+    if (!place) return;
+
+    const mapLink = getMapLink(place);
+    const shareText = `${place.name} - ${place.location}\n${mapLink}`;
+
+    navigator.clipboard.writeText(shareText).then(() => {
+        showToast('景点链接已复制到剪贴板！');
+    }).catch(err => {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('景点链接已复制到剪贴板！');
+    });
 }
 
 // 初始化模态框中的地图
@@ -881,6 +952,9 @@ window.copyPageLink = copyPageLink;
 window.showShareModal = showShareModal;
 window.copyAndOpenApp = copyAndOpenApp;
 window.openApp = openApp;
+window.sharePlaceToWeChat = sharePlaceToWeChat;
+window.sharePlaceToQQ = sharePlaceToQQ;
+window.copyPlaceLink = copyPlaceLink;
 
 // 分享整个页面到微信
 function shareToWeChatPage() {
